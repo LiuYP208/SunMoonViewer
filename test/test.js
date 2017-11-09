@@ -8,14 +8,7 @@ var path = require('path');
 
 var fs = require('fs');
 var _ = require('lodash');
-function _getUVFunc(x, y, z) {
-    var r = Math.sqrt(x * x + y * y + z * z);
-    var V = Math.asin(z / r) / Math.PI;
-    var U = Math.atan(y / x) / 2 / Math.PI;
-    console.log("r:" + r + "  v:" + V + "  u:" + U);
-    return [y, z];
 
-}
 
 function _GetTxtDataInfo() {
     var FileName = path.resolve('../data', 'SA_2014-12-10.txt');
@@ -67,6 +60,7 @@ function _getTarPos(locationItem) {
         "x": x, "y": y, "z": z, "uv": uv
     };
 }
+
 function _getSunPos(locationItem) {
     var x = locationItem[4];
     var y = locationItem[5];
@@ -85,6 +79,15 @@ function _getMoonPos(locationItem) {
     return {
         "x": x, "y": y, "z": z, "uv": uv
     };
+}
+
+function _getUVFunc(x, y, z) {
+    var r = Math.sqrt(x * x + y * y + z * z);
+    var V = Math.asin(z / r) / Math.PI;
+    var U = Math.atan(y / x) / 2 / Math.PI;
+    console.log("r:" + r + "  v:" + V + "  u:" + U);
+    return [y, z];
+
 }
 
 _GetTxtDataInfo();

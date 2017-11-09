@@ -21,20 +21,22 @@
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
 
-            <a class="navbar-brand" href="#" style="font-size: 22px;color: white"> 月球定标系统 -- 日地月星位置示意</a>
+            <a class="navbar-brand" href="#" style="font-size: 36px;color: white"> 月球定标系统 -- 日地月星位置示意</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
             <ul class="nav navbar-nav navbar-right">
-
+                <li><p class="showTimeStr" id="showTimeStr" style="font-size: 24px;color: white; margin: 10px 5px;"></p>
+                </li>
                 <li>
                     <input style=" height: 20px; margin: 15px 5px; " type="text" id="datepicker" placeholder="请选择日期"/>
                 </li>
                 <li>
 
-                    <button onclick="beginAnimation()" style=" height: 20px; margin: 15px 25px 15px 5px;  color: black" class="btn  btn-xs ">开始动画
+                    <button onclick="_beginAnimation()" style=" height: 20px; margin: 15px 25px 15px 5px;  color: black"
+                            class="btn  btn-xs beginAnimation">开始动画
                     </button>
 
                 </li>
@@ -44,232 +46,14 @@
     </div><!-- /.container-fluid -->
 </nav>
 
+
 <div style="width: 100%;height: 95%; margin-top: 50px;" id="canvasMain-div">
     <canvas class="sky-canvas"
             id="sky-canvas" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%">
     </canvas>
 </div>
 
-<script>
-    (function () {
 
-        function _initDatePicker() {
-            $("#datepicker").datepicker({
-                        language: "zh-CN",
-                        autoclose: true,//选中之后自动隐藏日期选择框
-                        clearBtn: true,//清除按钮
-                        todayBtn: true,//今日按钮
-                        format: "yyyy-mm-dd"//日期格式，详见 http://bootstrap-datepicker.readthedocs.org/en/release/options.html#format
-                    })
-                    .on('changeDate', function (ev) {
-                        console.log(ev);
-                        var TimeStr = moment(ev.date).format("YYYY-MM-DD");
-                        // var TimeStr = $(".datepicker").datepicker("getDate").toLocaleString();
-                        alert(TimeStr);
-                    });
-        }
-
-        //根据选择时间 ,获取json数据
-        function _getDataInfo(timeStr, next) {
-        }
-
-        var itemIndex = 0;
-        window.addEventListener("resize", resizeCanvas, false);
-
-        function resizeCanvas() {
-            var canvas = document.getElementById('sky-canvas');
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
-            _init();
-        }
-
-        var TimeSP = 0;
-        var timeController;
-        _initDatePicker();
-        function _init() {
-
-            //  timeController = setInterval(_DrawAll, 1000);
-            _drawSky(function () {
-            });
-            /*
-             _drawSky(function () {
-             _drawEarth(935, 510);
-             _testDraw();
-             _DrawAll();
-             });*/
-
-        }
-
-
-        function _testDraw() {
-            // _drawEarth(935, 510);
-            var SUN_u = Targetitem.sun.uv[0] / 200000 + 935;
-            var SUN_v = Targetitem.sun.uv[1] / 200000 + 510;
-            console.log("sun:" + SUN_u + ":" + SUN_v);
-            _drawSun(SUN_u, SUN_v);
-            var Moon_u = Targetitem.moon.uv[0] / 3000 + 935;
-            var Moon_v = Targetitem.moon.uv[1] / 3000 + 510;
-            console.log("Moon:" + Moon_u + ":" + Moon_v);
-            _drawMoon(Moon_u, Moon_v);
-
-            var Sate_u = Targetitem.target.uv[0] / 500 + 935;
-            var Sate_v = Targetitem.target.uv[1] / 500 + 510;
-            console.log("Sate:" + Sate_u + ":" + Sate_v);
-            _drawTarget(Sate_u, Sate_v);
-        }
-
-        function _DrawAll() {
-            _drawSky(function () {
-                _drawEarth(935, 510);
-                //  _testDraw();
-                //_DrawAll();
-
-
-                var Targetitem = TarList[itemIndex];
-
-                var SUN_u = Targetitem.sun.uv[0] / 200000 + 935 + 16;
-                var SUN_v = Targetitem.sun.uv[1] / 200000 + 510 + 16;
-                console.log("sun:" + SUN_u + ":" + SUN_v);
-                _drawSun(SUN_u, SUN_v);
-                var Moon_u = Targetitem.moon.uv[0] / 3000 + 935 + 16;
-                var Moon_v = Targetitem.moon.uv[1] / 3000 + 510 + 16;
-                console.log("Moon:" + Moon_u + ":" + Moon_v);
-                _drawMoon(Moon_u, Moon_v);
-
-                var Sate_u = Targetitem.target.uv[0] / 180 + 935 + 16;
-                var Sate_v = Targetitem.target.uv[1] / 180 + 510 + 16;
-                console.log("Sate:" + Sate_u + ":" + Sate_v);
-
-                _drawTarget(Sate_u, Sate_v);
-                itemIndex++;
-                if (itemIndex >= TarList.length) {
-                    itemIndex = 0;
-                }
-            });
-        }
-
-        function _drawSky(next) {
-            var _canvas = document.getElementById('sky-canvas');
-
-
-            var w = _canvas.width = window.innerWidth;
-            var h = _canvas.height = window.innerHeight;
-
-
-            if (_canvas.getContext) {
-                var ctx = _canvas.getContext('2d');
-                var img = new Image();
-                img.src = 'images/sky.png';
-                img.onload = function () {
-                    var _width = img.width;
-                    var _height = img.height;
-                    console.log(_width + ":" + _height);
-                    ctx.drawImage(img, 0, 0, w, h);
-                    next();
-                }
-            }
-
-
-        }
-
-        function _drawEarth(x, y) {
-            var canvas = document.getElementById('sky-canvas');
-
-            if (canvas.getContext) {
-                var ctx = canvas.getContext('2d');
-                var img = new Image();
-                img.src = 'images/earth.png';
-                img.onload = function () {
-                    var _width = img.width;
-                    var _height = img.height;
-                    console.log("earth:" + _width + ":" + _height);
-
-                    ctx.drawImage(img, x, y, _width, _height);
-                }
-
-            }
-        }
-
-
-        function _drawSun(x, y) {
-
-            var canvas = document.getElementById('sky-canvas');
-
-            if (canvas.getContext) {
-                var ctx = canvas.getContext('2d');
-                var img = new Image();
-                img.src = 'images/sun.png';
-                img.onload = function () {
-                    var _width = img.width;
-                    var _height = img.height;
-                    console.log(_width + ":" + _height);
-                    ctx.drawImage(img, x, y, _width, _height);
-                }
-
-            }
-        }
-
-        var getPixelRatio = function (context) {
-            var backingStore = context.backingStorePixelRatio ||
-                    context.webkitBackingStorePixelRatio ||
-                    context.mozBackingStorePixelRatio ||
-                    context.msBackingStorePixelRatio ||
-                    context.oBackingStorePixelRatio ||
-                    context.backingStorePixelRatio || 1;
-            return (window.devicePixelRatio || 1) / backingStore;
-        };
-
-        function _drawMoon(x, y) {
-
-            var canvas = document.getElementById('sky-canvas');
-            var ctx = canvas.getContext('2d');
-            var ratio = getPixelRatio(ctx);
-            if (canvas.getContext) {
-                var ctx = canvas.getContext('2d');
-                var img = new Image();
-                img.src = 'images/moon.png';
-                img.onload = function () {
-                    var _width = img.width;
-                    var _height = img.height;
-                    ctx.drawImage(img, x, y, ratio * 24, ratio * 24);
-                }
-
-            }
-
-
-        }
-
-        function _drawTarget(x, y) {
-
-            var canvas = document.getElementById('sky-canvas');
-            if (canvas.getContext) {
-                var ctx = canvas.getContext('2d');
-                var img = new Image();
-                img.src = 'images/satellite.png';
-                img.onload = function () {
-                    var _width = img.width;
-                    var _height = img.height;
-                    console.log(_width + ":" + _height);
-                    ctx.drawImage(img, x, y, _width, _height);
-                }
-
-            }
-
-
-        }
-
-        //点击开始动画
-        function   beginAnimation()
-        {
-
-        }
-
-
-
-
-
-        _init();
-    })();
-</script>
 </body>
+<script type="text/javascript" src="javascripe/main.js"></script>
 </html>

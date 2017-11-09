@@ -32,9 +32,8 @@ app.all('*', function (req, res, next) {
 });
 
 
-
 app.use('/', api);
 
 app.listen(8888, function () {
-console.log("Listening at 8888");
+    console.log("Listening at 8888");
 });
